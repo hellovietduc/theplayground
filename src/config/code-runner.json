@@ -1,0 +1,19 @@
+{
+    "docker": {
+        "socketPath": "/var/run/docker.sock"
+    },
+    "environments": {
+        "node": {
+            "Image": "node:14.4-alpine"
+        },
+        "go": {
+            "Image": "golang:1.14-alpine",
+            "Cmd": "go run main.go",
+            "Mount": {
+                "Target": "/go/main.go",
+                "Type": "bind",
+                "ReadOnly": true
+            }
+        }
+    }
+}
