@@ -1,4 +1,3 @@
-const { v4: uuidv4 } = require('uuid');
 const codeRunner = require('../service/code-runner');
 
 const validate = (req, res, next) => {
@@ -26,13 +25,11 @@ const validate = (req, res, next) => {
     next();
 };
 
-const runCode = (req, res) => {
+const runCode = async (req, res) => {
     const { code, lang } = req;
-    const id = uuidv4();
-    res.body = { id };
+    const output = await codeRunner.run(code, lang);
+    res.body = { output };
     res.send();
-
-    codeRunner.run(code, lang, id);
 };
 
 module.exports = [validate, runCode];

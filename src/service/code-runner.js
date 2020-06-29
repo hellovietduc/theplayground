@@ -1,6 +1,7 @@
 const Docker = require('dockerode');
 const { Writable } = require('stream');
 const { writeFileSync } = require('fs');
+const { v4: uuidv4 } = require('uuid');
 const logger = require('../util/log')('CodeRunner');
 
 const createContainerDefaults = {
@@ -46,12 +47,12 @@ class CodeRunner {
         logger.success(`Loaded ${pullImages.length} environments`);
     }
 
-    async run(code, lang, id) {
+    async run(code, lang) {
         if (!this.isReady) {
             throw new Error('Code Runner is not ready yet');
         }
 
-        if (typeof code !== 'string' || typeof id !== 'string') {
+        if (typeof code !== 'string') {
             throw new Error('Invalid param types');
         }
 
@@ -63,7 +64,7 @@ class CodeRunner {
         const createOpts = {
             ...createContainerDefaults,
             Image: env.Image,
-            name: `${lang}_${id}`
+            name: `${lang}_${uuidv4()}`
         };
 
         if (env.Mount) {
@@ -114,7 +115,7 @@ class CodeRunner {
         containerStream.end(Buffer.from(env.Cmd || code));
 
         await container.wait();
-        logger.complete(`Cemoved: ${createOpts.name}`);
+        logger.complete(`Removed: ${createOpts.name}`);
         return output.toString();
     }
 }
