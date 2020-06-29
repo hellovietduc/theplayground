@@ -1,9 +1,7 @@
 const Docker = require('dockerode');
 const { Writable } = require('stream');
 const { writeFileSync } = require('fs');
-const signale = require('signale');
-const dockerConfig = require('../config/docker.json');
-const languagesConfig = require('../config/languages.json');
+const logger = require('../util/log')('CodeRunner');
 
 const createContainerDefaults = {
     AttachStdin: true,
@@ -26,21 +24,26 @@ const attachContainerDefaults = {
 
 class CodeRunner {
     constructor() {
-        this.docker = new Docker(dockerConfig);
+        this.docker = null;
+        this.envConfig = null;
         this.isReady = false;
     }
 
-    async init() {
-        const pullImages = Object.values(languagesConfig)
-            .map(langConfig => new Promise((resolve, reject) => {
-                this.docker.pull(langConfig.Image, (err, stream) => {
+    async init(config) {
+        this.docker = new Docker(config.docker);
+        this.envConfig = config.environments;
+
+        const pullImages = Object.values(this.envConfig)
+            .map(env => new Promise((resolve, reject) => {
+                this.docker.pull(env.Image, (err, stream) => {
                     if (err) return reject(err);
                     this.docker.modem.followProgress(stream, resolve);
                 });
             }));
         await Promise.all(pullImages);
+
         this.isReady = true;
-        signale.success('Code Runner is ready');
+        logger.success(`Loaded ${pullImages.length} environments`);
     }
 
     async run(code, lang, id) {
@@ -52,22 +55,22 @@ class CodeRunner {
             throw new Error('Invalid param types');
         }
 
-        const langConfig = languagesConfig[lang];
-        if (!langConfig) {
+        const env = this.envConfig[lang];
+        if (!env) {
             throw new Error('Language not supported');
         }
 
         const createOpts = {
             ...createContainerDefaults,
-            Image: langConfig.Image,
+            Image: env.Image,
             name: `${lang}_${id}`
         };
 
-        if (langConfig.Mount) {
+        if (env.Mount) {
             const path = `/tmp/${createOpts.name}`;
             writeFileSync(path, code);
             createOpts.HostConfig.Mounts = [{
-                ...langConfig.Mount,
+                ...env.Mount,
                 Source: path
             }];
         }
@@ -101,17 +104,17 @@ class CodeRunner {
         });
 
         const container = await this.docker.createContainer(createOpts);
-        signale.info(`[Container ${createOpts.name}]\tCreated`);
+        logger.info(`Created: ${createOpts.name}`);
 
         const containerStream = await container.attach(attachContainerDefaults);
         containerStream.pipe(outputStream);
 
         await container.start();
-        signale.success(`[Container ${createOpts.name}]\tStarted`);
-        containerStream.end(Buffer.from(langConfig.Cmd || code));
+        logger.success(`Started: ${createOpts.name}`);
+        containerStream.end(Buffer.from(env.Cmd || code));
 
         await container.wait();
-        signale.complete(`[Container ${createOpts.name}]\tRemoved`);
+        logger.complete(`Cemoved: ${createOpts.name}`);
         return output.toString();
     }
 }
