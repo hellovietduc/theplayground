@@ -18,8 +18,11 @@
   },
   "homepage": "https://github.com/vietduc01100001/theplayground#readme",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "dockerode": "^3.2.0",
-    "signale": "^1.4.0"
+    "restana": "^4.6.1",
+    "signale": "^1.4.0",
+    "uuid": "^8.2.0"
   },
   "devDependencies": {
     "@vietduc/eslint-config": "^1.0.4",
