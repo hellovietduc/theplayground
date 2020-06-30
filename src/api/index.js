@@ -2,6 +2,7 @@ const api = require('restana')();
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const runCode = require('./run-code');
+const getTemplate = require('./get-template');
 const logger = require('../util/log')('API');
 
 module.exports.init = async config => {
@@ -13,6 +14,7 @@ module.exports.init = async config => {
         next();
     };
     api.post('/code/run/:lang', attachConfig, ...runCode);
+    api.get('/template/:lang', attachConfig, ...getTemplate);
 
     await api.start(config.port);
     logger.success(`Listening on ${config.port}`);
