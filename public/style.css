@@ -23,17 +23,17 @@ body {
     border: none;
     border-radius: 3px;
     color: #084B83;
-    background-color:#F0F6F6;
+    background-color: #F0F6F6;
 }
 
 .content {
-    position:absolute;
+    position: absolute;
     top: 30px;
-    bottom:25%;
-    left:0;
+    bottom: 25%;
+    left: 0;
     right: 0;
-    padding:5px;
-    background-color:#F0F6F6;
+    padding: 5px;
+    background-color: #F0F6F6;
 }
 
 #code {
@@ -42,17 +42,21 @@ body {
     border: none;
     outline: none;
     resize: none;
-    background-color:inherit;
+    background-color: inherit;
     font-family: Menlo, monospace;
 }
 
 .output {
-    position:absolute;
-    top:75%;
-    bottom:0;
+    position: absolute;
+    top: 75%;
+    bottom: 0;
     left: 0;
-    right:0;
-    padding:5px;
-    background-color:#BBE6E4;
+    right: 0;
+    padding: 10px 5px;
+    background-color: #BBE6E4;
     font-family: Menlo, monospace;
+}
+
+.output #status {
+    color: #666;
 }

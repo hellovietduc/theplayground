@@ -3,5 +3,8 @@
         "airbnb-base",
         "plugin:jest/recommended",
         "@vietduc"
-    ]
+    ],
+    "env": {
+        "browser": true
+    }
 }
