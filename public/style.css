@@ -18,7 +18,7 @@ body {
     margin: 0 3% 0 5px;
 }
 
-.header button {
+.header button select {
     padding: 5px;
     border: none;
     border-radius: 3px;

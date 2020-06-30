@@ -1,11 +1,12 @@
 const runBtn = document.getElementById('run');
+const langChooser = document.getElementById('lang');
 const codeInput = document.getElementById('code');
 const consoleOutput = document.getElementById('console');
 const consoleStatus = document.getElementById('status');
 
 const runCode = () => {
-    const lang = 'node'; // temp fixed
-    const code = codeInput.value;
+    const lang = langChooser.value.trim();
+    const code = codeInput.value.trim();
 
     const xhr = new XMLHttpRequest();
     xhr.open('POST', `http://localhost:3000/code/run/${lang}`, true);
