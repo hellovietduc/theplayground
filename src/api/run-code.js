@@ -6,17 +6,13 @@ const validate = (req, res, next) => {
     const { supportedLanguages } = req.config.validation;
 
     if (!supportedLanguages.includes(lang)) {
-        res.body = {
-            error: 'LANG_NOT_SUPPORTED'
-        };
+        res.body = 'Language not supported.';
         return res.send(400);
     }
 
     if (!code || !code.trim()) {
-        res.body = {
-            error: 'CODE_EMPTY'
-        };
-        return res.send(400);
+        res.body = '';
+        return res.send();
     }
 
     req.lang = lang;
@@ -28,7 +24,7 @@ const validate = (req, res, next) => {
 const runCode = async (req, res) => {
     const { code, lang } = req;
     const output = await codeRunner.run(code, lang);
-    res.body = { output };
+    res.body = output;
     res.send();
 };
 
