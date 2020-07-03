@@ -27,12 +27,14 @@ class CodeRunner {
     constructor() {
         this.docker = null;
         this.envConfig = null;
+        this.tmpFolder = null;
         this.isReady = false;
     }
 
     async init(config) {
         this.docker = new Docker(config.docker);
         this.envConfig = config.environments;
+        this.tmpFolder = config.tmpFolder;
 
         const pullImages = Object.values(this.envConfig)
             .map(env => new Promise((resolve, reject) => {
@@ -68,7 +70,7 @@ class CodeRunner {
         };
 
         if (env.Mount) {
-            const path = `/tmp/${createOpts.name}`;
+            const path = `${this.tmpFolder}/${createOpts.name}`;
             writeFileSync(path, code);
             createOpts.HostConfig.Mounts = [{
                 ...env.Mount,
