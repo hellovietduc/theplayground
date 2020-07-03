@@ -1,0 +1,5 @@
+.*ignore
+.eslint*
+.huskyrc.json
+build.sh
+node_modules/
