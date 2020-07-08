@@ -17,6 +17,9 @@
         },
         "python": {
             "Image": "python:3.8-alpine"
+        },
+        "bash": {
+            "Image": "bash:5.0"
         }
     },
     "hostTmp": "/tmp",
