@@ -4,7 +4,8 @@
         "supportedLanguages": [
             "node",
             "go",
-            "python"
+            "python",
+            "bash"
         ]
     },
     "templateFolder": "src/template"
