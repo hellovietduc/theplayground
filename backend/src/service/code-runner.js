@@ -5,7 +5,7 @@ const { join } = require('path');
 const { v4: uuidv4 } = require('uuid');
 const logger = require('../util/log')('CodeRunner');
 
-const createContainerDefaults = {
+const createContainerDefaults = JSON.stringify({
     AttachStdin: true,
     AttachStdout: true,
     AttachStderr: true,
@@ -14,15 +14,15 @@ const createContainerDefaults = {
     HostConfig: {
         AutoRemove: true
     }
-};
+});
 
-const attachContainerDefaults = {
+const attachContainerDefaults = JSON.stringify({
     stdin: true,
     stderr: true,
     stdout: true,
     stream: true,
     hijack: true
-};
+});
 
 class CodeRunner {
     constructor() {
@@ -66,7 +66,7 @@ class CodeRunner {
         }
 
         const createOpts = {
-            ...createContainerDefaults,
+            ...JSON.parse(createContainerDefaults),
             Image: env.Image,
             name: `${lang}_${uuidv4()}`
         };
@@ -115,7 +115,7 @@ class CodeRunner {
         const container = await this.docker.createContainer(createOpts);
         logger.success(`Container Created: ${createOpts.name}`);
 
-        const containerStream = await container.attach(attachContainerDefaults);
+        const containerStream = await container.attach(JSON.parse(attachContainerDefaults));
         containerStream.pipe(outputStream);
 
         await container.start();
