@@ -9,7 +9,7 @@ const runCode = () => {
     const code = codeInput.value.trim();
 
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', `http://localhost:3000/code/run/${lang}`, true);
+    xhr.open('POST', `http://localhost:3000/run/${lang}`, true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
     xhr.onreadystatechange = function onStateChange() {

@@ -13,7 +13,7 @@ module.exports.init = async config => {
         req.config = config;
         next();
     };
-    api.post('/code/run/:lang', attachConfig, ...runCode);
+    api.post('/run/:lang', attachConfig, ...runCode);
     api.get('/template/:lang', attachConfig, ...getTemplate);
 
     await api.start(config.port);
