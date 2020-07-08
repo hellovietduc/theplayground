@@ -3,7 +3,8 @@
     "validation": {
         "supportedLanguages": [
             "node",
-            "go"
+            "go",
+            "python"
         ]
     },
     "templateFolder": "src/template"
