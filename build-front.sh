@@ -30,10 +30,16 @@ minifyJS() {
     terser -c -m -e -o "$output" -- "$input"
 }
 
-[[ ! -d dist ]] && mkdir dist
+[[ ! -d frontend/dist ]] && mkdir -p frontend/dist
 
-minifyHTML index.html dist/index.html
+minifyHTML frontend/index.html frontend/dist/index.html
 
-minifyCSS style.css dist/style.css
+minifyCSS frontend/style.css frontend/dist/style.css
 
-minifyJS index.js dist/index.js
+minifyJS frontend/index.js frontend/dist/index.js
+
+cp frontend/favicon* frontend/dist/
+
+ls -l frontend/dist
+
+git subtree push --prefix frontend/dist origin gh-pages
