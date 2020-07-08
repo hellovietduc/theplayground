@@ -16,5 +16,6 @@
             }
         }
     },
-    "tmpFolder": "/tmp"
+    "hostTmp": "/tmp",
+    "containerTmp": "/tmp"
 }
