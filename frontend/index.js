@@ -3,13 +3,14 @@ const langChooser = document.getElementById('lang');
 const codeInput = document.getElementById('code');
 const consoleOutput = document.getElementById('console');
 const consoleStatus = document.getElementById('status');
+const baseURL = 'https://api.vietduc01100001.tech/playground';
 
 const runCode = () => {
     const lang = langChooser.value.trim();
     const code = codeInput.value.trim();
 
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', `http://localhost:3000/run/${lang}`, true);
+    xhr.open('POST', `${baseURL}/run/${lang}`, true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
     xhr.onreadystatechange = function onStateChange() {
@@ -22,14 +23,14 @@ const runCode = () => {
         }
     };
 
-    xhr.send(`code=${code}`);
+    xhr.send(`code=${encodeURIComponent(code)}`);
     consoleOutput.innerText = '';
     consoleStatus.innerText = 'Waiting for remote server...';
 };
 
 const getTemplate = lang => new Promise(resolve => {
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', `http://localhost:3000/template/${lang}`, true);
+    xhr.open('GET', `${baseURL}/template/${lang}`, true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
     xhr.onreadystatechange = function onStateChange() {
