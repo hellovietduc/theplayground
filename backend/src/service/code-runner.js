@@ -1,6 +1,7 @@
 const Docker = require('dockerode');
 const { Writable } = require('stream');
-const { writeFileSync } = require('fs');
+const { writeFileSync, unlinkSync } = require('fs');
+const { join } = require('path');
 const { v4: uuidv4 } = require('uuid');
 const logger = require('../util/log')('CodeRunner');
 
@@ -34,7 +35,8 @@ class CodeRunner {
     async init(config) {
         this.docker = new Docker(config.docker);
         this.envConfig = config.environments;
-        this.tmpFolder = config.tmpFolder;
+        this.hostTmp = config.hostTmp;
+        this.containerTmp = config.containerTmp;
 
         const pullImages = Object.values(this.envConfig)
             .map(env => new Promise((resolve, reject) => {
@@ -69,13 +71,17 @@ class CodeRunner {
             name: `${lang}_${uuidv4()}`
         };
 
+        let hostPath = null;
+        let containerPath = null;
         if (env.Mount) {
-            const path = `${this.tmpFolder}/${createOpts.name}`;
-            writeFileSync(path, code);
+            hostPath = join(this.hostTmp, createOpts.name);
+            containerPath = join(this.containerTmp, createOpts.name);
             createOpts.HostConfig.Mounts = [{
                 ...env.Mount,
-                Source: path
+                Source: hostPath
             }];
+            writeFileSync(containerPath, code);
+            logger.info(`Temp File Created on Host: ${hostPath}`);
         }
 
         let output = Buffer.from('');
@@ -107,17 +113,23 @@ class CodeRunner {
         });
 
         const container = await this.docker.createContainer(createOpts);
-        logger.info(`Created: ${createOpts.name}`);
+        logger.success(`Container Created: ${createOpts.name}`);
 
         const containerStream = await container.attach(attachContainerDefaults);
         containerStream.pipe(outputStream);
 
         await container.start();
-        logger.success(`Started: ${createOpts.name}`);
+        logger.success(`Container Started: ${createOpts.name}`);
         containerStream.end(Buffer.from(env.Cmd || code));
 
         await container.wait();
-        logger.complete(`Removed: ${createOpts.name}`);
+        logger.complete(`Container Removed: ${createOpts.name}`);
+
+        if (env.Mount && hostPath && containerPath) {
+            unlinkSync(containerPath);
+            logger.complete(`Temp File Removed on Host: ${hostPath}`);
+        }
+
         return output.toString();
     }
 }
