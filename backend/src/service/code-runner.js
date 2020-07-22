@@ -124,8 +124,12 @@ class CodeRunner {
         containerStream.end(Buffer.from(env.Cmd || code));
 
         setTimeout(async () => {
-            await container.stop();
-            logger.complete(`Container Stopped: ${createOpts.name}`);
+            try {
+                await container.stop();
+                logger.complete(`Container Stopped: ${createOpts.name}`);
+            } catch {
+                // do nothing
+            }
         }, this.timeout);
 
         await container.wait();
