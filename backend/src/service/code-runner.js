@@ -37,6 +37,7 @@ class CodeRunner {
         this.envConfig = config.environments;
         this.hostTmp = config.hostTmp;
         this.containerTmp = config.containerTmp;
+        this.timeout = config.timeout * 1000;
 
         const pullImages = Object.values(this.envConfig)
             .map(env => new Promise((resolve, reject) => {
@@ -121,6 +122,11 @@ class CodeRunner {
         await container.start();
         logger.success(`Container Started: ${createOpts.name}`);
         containerStream.end(Buffer.from(env.Cmd || code));
+
+        setTimeout(async () => {
+            await container.stop();
+            logger.complete(`Container Stopped: ${createOpts.name}`);
+        }, this.timeout);
 
         await container.wait();
         logger.complete(`Container Removed: ${createOpts.name}`);
