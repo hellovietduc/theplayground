@@ -23,5 +23,6 @@
         }
     },
     "hostTmp": "/tmp",
-    "containerTmp": "/tmp"
+    "containerTmp": "/tmp",
+    "timeout": 30
 }
