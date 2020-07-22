@@ -22,3 +22,22 @@
 - [x] Python
 - [x] Bash
 - [ ] and more
+
+## How to run locally?
+
+Run the backend:
+
+```console
+cd backend
+npm install
+npm run dev
+```
+
+Run the frontend:
+
+```console
+cd frontend
+npx serve
+```
+
+Access the app at [http://localhost:5000](http://localhost:5000).
