@@ -1,3 +1,5 @@
+/* eslint-disable max-classes-per-file */
+
 const Docker = require('dockerode');
 const { Writable } = require('stream');
 const { join } = require('path');

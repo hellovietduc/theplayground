@@ -6,8 +6,5 @@
     ],
     "env": {
         "browser": true
-    },
-    "rules": {
-        "max-classes-per-file": "off"
     }
 }
