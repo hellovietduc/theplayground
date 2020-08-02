@@ -2,6 +2,7 @@ const Docker = require('dockerode');
 const { Writable } = require('stream');
 const { join } = require('path');
 const { v4: uuidv4 } = require('uuid');
+const RateLimiter = require('./rate-limiter');
 const { writeFile, unlink } = require('../util/fs');
 const logger = require('../util/log')('CodeRunner');
 
@@ -24,20 +25,33 @@ const attachContainerDefaults = JSON.stringify({
     hijack: true
 });
 
+const RATE_LIMIT_KEY = 'code-runner';
+
+class CodeRunnerError extends Error { }
+
 class CodeRunner {
     constructor() {
         this.docker = null;
+        this.rateLimiter = null;
         this.envConfig = null;
-        this.tmpFolder = null;
+        this.hostTmp = null;
+        this.containerTmp = null;
+        this.timeout = null;
         this.isReady = false;
     }
 
     async init(config) {
+        if (this.isReady) return;
+
         this.docker = new Docker(config.docker);
+        this.rateLimiter = new RateLimiter(config.redis);
         this.envConfig = config.environments;
         this.hostTmp = config.hostTmp;
         this.containerTmp = config.containerTmp;
         this.timeout = config.timeout * 1000;
+
+        this.rateLimiter.add(RATE_LIMIT_KEY, config.maxContainers);
+        await this.rateLimiter.flush();
 
         const pullImages = Object.values(this.envConfig)
             .map(env => new Promise((resolve, reject) => {
@@ -53,18 +67,24 @@ class CodeRunner {
     }
 
     async run(code, lang) {
-        if (!this.isReady) {
-            throw new Error('Code Runner is not ready yet');
-        }
-
         if (typeof code !== 'string') {
             throw new Error('Invalid param types');
         }
 
+        if (!this.isReady) {
+            throw new CodeRunnerError('Code Runner is not ready yet');
+        }
+
         const env = this.envConfig[lang];
         if (!env) {
-            throw new Error('Language not supported');
+            throw new CodeRunnerError('Language not supported');
         }
+
+        if (await this.rateLimiter.exceeded(RATE_LIMIT_KEY)) {
+            throw new CodeRunnerError('Rate limit exceeded');
+        }
+
+        await this.rateLimiter.increase(RATE_LIMIT_KEY);
 
         const createOpts = {
             ...JSON.parse(createContainerDefaults),
@@ -133,6 +153,7 @@ class CodeRunner {
         }, this.timeout);
 
         await container.wait();
+        await this.rateLimiter.decrease(RATE_LIMIT_KEY);
         logger.complete(`Container Removed: ${createOpts.name}`);
 
         if (env.Mount && hostPath && containerPath) {
@@ -145,3 +166,4 @@ class CodeRunner {
 }
 
 module.exports = new CodeRunner();
+module.exports.Error = CodeRunnerError;

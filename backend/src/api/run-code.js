@@ -31,7 +31,11 @@ const runCode = async (req, res) => {
         res.send();
     } catch (err) {
         logger.error('Run code error:', err);
-        res.body = 'Unknown error.';
+        if (err instanceof codeRunner.Error) {
+            res.body = err.message;
+        } else {
+            res.body = 'Unknown error.';
+        }
         res.send(400);
     }
 };
