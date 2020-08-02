@@ -2,6 +2,11 @@
     "docker": {
         "socketPath": "/var/run/docker.sock"
     },
+    "redis": {
+        "port": 6379,
+        "host": "127.0.0.1",
+        "db": 0
+    },
     "environments": {
         "node": {
             "Image": "node:14.4-alpine"
@@ -24,5 +29,6 @@
     },
     "hostTmp": "/tmp",
     "containerTmp": "/tmp",
-    "timeout": 30
+    "timeout": 30,
+    "maxContainers": 50
 }
