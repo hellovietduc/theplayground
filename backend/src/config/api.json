@@ -1,12 +1,5 @@
 {
     "port": 3000,
-    "validation": {
-        "supportedLanguages": [
-            "node",
-            "go",
-            "python",
-            "bash"
-        ]
-    },
+    "validation": {},
     "templateFolder": "src/template"
 }

@@ -1,8 +1,8 @@
 const Docker = require('dockerode');
 const { Writable } = require('stream');
-const { writeFileSync, unlinkSync } = require('fs');
 const { join } = require('path');
 const { v4: uuidv4 } = require('uuid');
+const { writeFile, unlink } = require('../util/fs');
 const logger = require('../util/log')('CodeRunner');
 
 const createContainerDefaults = JSON.stringify({
@@ -81,7 +81,7 @@ class CodeRunner {
                 ...env.Mount,
                 Source: hostPath
             }];
-            writeFileSync(containerPath, code);
+            await writeFile(containerPath, code);
             logger.info(`Temp File Created on Host: ${hostPath}`);
         }
 
@@ -136,7 +136,7 @@ class CodeRunner {
         logger.complete(`Container Removed: ${createOpts.name}`);
 
         if (env.Mount && hostPath && containerPath) {
-            unlinkSync(containerPath);
+            await unlink(containerPath);
             logger.complete(`Temp File Removed on Host: ${hostPath}`);
         }
 

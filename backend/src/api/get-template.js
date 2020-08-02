@@ -1,12 +1,13 @@
-const fs = require('fs');
 const path = require('path');
+const { readFile } = require('../util/fs');
 const logger = require('../util/log')('API');
 
 const validate = (req, res, next) => {
     const { lang } = req.params;
     const { supportedLanguages } = req.config.validation;
 
-    if (!supportedLanguages.includes(lang)) {
+    if (!supportedLanguages.has(lang)) {
+        logger.error('Template not found:', lang);
         res.body = 'Language not supported.';
         return res.send(400);
     }
@@ -15,13 +16,13 @@ const validate = (req, res, next) => {
     next();
 };
 
-const getTemplate = (req, res) => {
+const getTemplate = async (req, res) => {
     try {
         const { templateFolder } = req.config;
         const { lang } = req;
 
         const filePath = path.join(process.cwd(), templateFolder, lang);
-        const output = fs.readFileSync(filePath, { encoding: 'utf-8' });
+        const output = await readFile(filePath, { encoding: 'utf-8' });
 
         res.body = output;
         res.send();

@@ -13,6 +13,7 @@ module.exports.init = async config => {
         req.config = config;
         next();
     };
+
     api.post('/run/:lang', attachConfig, ...runCode);
     api.get('/template/:lang', attachConfig, ...getTemplate);
 
