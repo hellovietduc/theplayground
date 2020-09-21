@@ -3,7 +3,7 @@
 </div>
 
 <p align="center">
-    <a href="https://theplayground.vietduc01100001.tech">Website</a>
+    <a href="https://playground.duc-nguyen.xyz">Website</a>
 </p>
 
 <h1></h1>

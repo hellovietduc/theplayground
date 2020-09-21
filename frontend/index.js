@@ -3,7 +3,7 @@ const langChooser = document.getElementById('lang');
 const codeInput = document.getElementById('code');
 const consoleOutput = document.getElementById('console');
 const consoleStatus = document.getElementById('status');
-const baseURL = 'https://api.vietduc01100001.tech/playground';
+const baseURL = 'https://api.duc-nguyen.xyz/playground';
 
 const runCode = () => {
     const lang = langChooser.value.trim();
